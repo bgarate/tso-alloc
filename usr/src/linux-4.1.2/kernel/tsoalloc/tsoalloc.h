@@ -1,13 +1,30 @@
+#ifndef TSO_ALLOC
+
+#define TSO_ALLOC
 
 #define INITIAL_SIZE 8
 
-struct tso_mm_free_region {
-  struct list_head list;
+enum ALLOCATION_STRATEGY {
+  FIRST_FIT = 0,
+  BEST_FIT = 1,
+  WORST_FIT = 2
+}
+
+struct tso_mm_region {
+  struct list_head next;
+  addr_t start;
+  size_t size;
 }
 
 struct tso_mm_mapping {
+  tso_mm_region* used;
+  tso_mm_region* free;
   addr_t start;
   size_t size;
 };
 
-tso_mm_mapping* init_tsoalloc();
+tso_mm_alloc(size_t size);
+tso_mm_free(void* addr);
+tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy)
+
+#endif

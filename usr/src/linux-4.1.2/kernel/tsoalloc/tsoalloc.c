@@ -1,33 +1,35 @@
 #include tsoalloc.h
 
-#DEFINE START_NEXT_FREE(dsd)
-#DEFINE SIZE_NEXT_FREE(asdasd)
+#include <linux/list.h>
+
+#define START_NEXT_FREE(dsd)
+#define SIZE_NEXT_FREE(asdasd)
 
 
 static ALLOCATION_STRATEGY current_strategy = FIRST_FIT;
 
 
-tso_mm_alloc(size_t size) {
+asmlinkage long sys_tso_mm_alloc(size_t size) {
 
 }
 
-tso_mm_free(void* addr) {
+asmlinkage long sys_tso_mm_free(void* addr) {
 
 }
 
-tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy) {
+asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy) {
 
 }
 
-__tso_mm_initialize() {
+void __tso_mm_initialize() {
 
 }
 
-__tso_mm_expand() {
+void __tso_mm_expand() {
 
 }
 
-__tso_mm_get_fit(size_t size) {
+long __tso_mm_get_fit(size_t size) {
   switch(current_strategy) {
   case WORST_FIT:
     return __tso_mm_get_worst_fit(size);
@@ -41,27 +43,27 @@ __tso_mm_get_fit(size_t size) {
   }
 }
 
-__tso_mm_get_best_fit(size_t size) {
+long __tso_mm_get_best_fit(size_t size) {
 }
 
-__tso_mm_get_worse_fit(size_t size) {
+long __tso_mm_get_worse_fit(size_t size) {
 }
 
-__tso_mm_get_first_fit(size_t size) {
+long __tso_mm_get_first_fit(size_t size) {
 }
 
-__tso_mm_add_region(tso_mm_region region) {
-
-}
-
-__tso_mm_remove_region(tso_mm_region region) {
+void __tso_mm_add_region(tso_mm_region region) {
 
 }
 
-__tso_mm_split_region(tso_mm_region previous, tso_mm_region freed_region, tso_mm_region next) {
+void __tso_mm_remove_region(tso_mm_region region) {
 
 }
 
-__tso_mm_join_region(tso_mm_region previous, tso_mm_region freed_region, tso_mm_region next) {
+void __tso_mm_split_region(tso_mm_region previous, tso_mm_region freed_region, tso_mm_region next) {
+
+}
+
+void __tso_mm_join_region(tso_mm_region previous, tso_mm_region freed_region, tso_mm_region next) {
 
 }

@@ -61,6 +61,9 @@ struct sched_param {
 
 #include <asm/processor.h>
 
+//tso-alloc
+#include <linux/tsoalloc.h>
+
 #define SCHED_ATTR_SIZE_VER0	48	/* sizeof first published struct */
 
 /*
@@ -1724,6 +1727,9 @@ struct task_struct {
 #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
 	unsigned long	task_state_change;
 #endif
+
+	//tso-alloc
+	struct tso_mm_mapping tso_mm;
 };
 
 /* Future-safe accessor for struct task_struct's cpus_allowed. */

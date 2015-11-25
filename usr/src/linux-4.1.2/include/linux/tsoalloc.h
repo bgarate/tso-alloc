@@ -1,8 +1,7 @@
 #ifndef TSO_ALLOC
+#define TSO_ALLOC
 
 #include <linux/list.h>
-
-#define TSO_ALLOC
 
 #define INITIAL_SIZE 8
 

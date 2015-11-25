@@ -1,9 +1,7 @@
 #include <linux/tsoalloc.h>
 #include <linux/list.h>
 
-#define START_NEXT_FREE(dsd)
-#define SIZE_NEXT_FREE(asdasd)
-
+#define current_mm current->tso_mm
 
 static ALLOCATION_STRATEGY current_strategy = FIRST_FIT;
 
@@ -20,12 +18,15 @@ asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy) {
 
 }
 
-void __tso_mm_initialize() {
-
+tso_mm_maping __tso_mm_initialize() {
+  tso_mm_maping mm;
+  mm->start = do_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
+  mm->size = INTIAL_SIZE;
+  mm->free = INITIAL_SIZE;
 }
 
 void __tso_mm_expand() {
-
+  
 }
 
 long __tso_mm_get_fit(size_t size) {

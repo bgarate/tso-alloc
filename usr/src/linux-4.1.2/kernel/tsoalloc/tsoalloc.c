@@ -18,23 +18,33 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* ret) {
   tso_mm_region* new_region = (tso_mm_region*)(__region_end(fit) + 1);
   new_region->size = size;
 
+<<<<<<< HEAD
   new_region->next = fit->next;
   fit->next = new_region;
 
   ret = __to_user_address(new_region);
 
+=======
+asmlinkage long sys_tso_mm_alloc(size_t size) {
+  return 0;
+>>>>>>> origin/master
 }
 
 asmlinkage long sys_tso_mm_free(void* addr) {
-
+  return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy) {
   current_strategy = strategy;
 }
 
 inline void* __region_end(tso_mm_region region) {
   return (void*)(&region + sizeof(tso_mm_region) + region->size)
+=======
+asmlinkage long sys_tso_mm_switch_strategy(enum ALLOCATION_STRATEGY strategy) {
+  return 0;
+>>>>>>> origin/master
 }
 
 tso_mm_maping* __tso_mm_initialize() {
@@ -78,6 +88,7 @@ tso_mm_region* __tso_mm_get_before_fit(size_t size) {
   }
 }
 
+<<<<<<< HEAD
 tso_mm_region* __tso_mm_get_before_best_fit(size_t size) {
 }
 
@@ -89,17 +100,32 @@ tso_mm_region* __tso_mm_get_before_first_fit(size_t size) {
 
   if(current_region == NULL)
     return 
+=======
+long __tso_mm_get_best_fit(size_t size) {
+  return 0;
+}
+
+long __tso_mm_get_worse_fit(size_t size) {
+  return 0;
+}
+
+long __tso_mm_get_first_fit(size_t size) {
+  return 0;
+}
+
+void __tso_mm_add_region(struct tso_mm_region region) {
+>>>>>>> origin/master
 
 }
 
-void __tso_mm_remove_region(tso_mm_region region) {
+void __tso_mm_remove_region(struct tso_mm_region region) {
 
 }
 
-void __tso_mm_split_region(tso_mm_region previous, tso_mm_region freed_region, tso_mm_region next) {
+void __tso_mm_split_region(struct tso_mm_region previous, struct tso_mm_region freed_region, struct tso_mm_region next) {
 
 }
 
-void __tso_mm_join_region(tso_mm_region previous, tso_mm_region freed_region, tso_mm_region next) {
+void __tso_mm_join_region(struct tso_mm_region previous, struct tso_mm_region freed_region, struct tso_mm_region next) {
 
 }

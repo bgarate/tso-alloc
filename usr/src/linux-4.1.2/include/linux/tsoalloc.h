@@ -4,6 +4,7 @@
 #include <linux/list.h>
 
 #define INITIAL_SIZE 8
+#define MAX_SIZE 1024
 
 typedef unsigned long addr_t;
 typedef unsigned int size_t;
@@ -18,6 +19,7 @@ struct tso_mm_region {
   struct list_head next;
   addr_t start;
   size_t size;
+  size_t free;
 };
 
 struct tso_mm_mapping {

@@ -4,6 +4,7 @@
 #include <linux/list.h>
 
 #define INITIAL_SIZE 8
+#define MAX_SIZE 1024
 
 enum ALLOCATION_STRATEGY {
   FIRST_FIT = 0,
@@ -15,6 +16,7 @@ struct tso_mm_region {
   struct list_head next;
   addr_t start;
   size_t size;
+  size_t free;
 };
 
 struct tso_mm_mapping {

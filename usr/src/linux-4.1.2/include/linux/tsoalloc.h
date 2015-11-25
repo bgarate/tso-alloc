@@ -5,6 +5,9 @@
 
 #define INITIAL_SIZE 8
 
+typedef unsigned long addr_t;
+typedef unsigned int size_t;
+  
 enum ALLOCATION_STRATEGY {
   FIRST_FIT = 0,
   BEST_FIT = 1,
@@ -18,14 +21,14 @@ struct tso_mm_region {
 };
 
 struct tso_mm_mapping {
-  tso_mm_region* used;
-  tso_mm_region* free;
+  struct tso_mm_region* used;
+  struct tso_mm_region* free;
   addr_t start;
   size_t size;
 };
 
 asmlinkage long sys_tso_mm_alloc(size_t size);
 asmlinkage long sys_tso_mm_free(void* addr);
-asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy)
+asmlinkage long sys_tso_mm_switch_strategy(enum ALLOCATION_STRATEGY strategy);
 
 #endif

@@ -13,16 +13,14 @@ enum ALLOCATION_STRATEGY {
 };
 
 struct tso_mm_region {
-  struct list_head next;
-  addr_t start;
+  tso_mm_region* next;
   size_t size;
   size_t free;
 };
 
 struct tso_mm_mapping {
-  tso_mm_region* used;
-  tso_mm_region* free;
-  addr_t start;
+  tso_mm_region* first_region;
+  void* start;
   size_t size;
 };
 

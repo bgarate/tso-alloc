@@ -1,9 +1,10 @@
 #include <linux/tsoalloc.h>
 #include <linux/list.h>
 
+#define INITIAL_SIZE 1024
 #define current_mm current->tso_mm
 
-static ALLOCATION_STRATEGY current_strategy = FIRST_FIT;
+static enum ALLOCATION_STRATEGY current_strategy = FIRST_FIT;
 
 
 asmlinkage long sys_tso_mm_alloc(size_t size) {
@@ -18,11 +19,12 @@ asmlinkage long sys_tso_mm_switch_strategy(enum ALLOCATION_STRATEGY strategy) {
   return 0;
 }
 
-tso_mm_maping __tso_mm_initialize() {
-  tso_mm_maping mm;
+struct tso_mm_maping __tso_mm_initialize() {
+  struct tso_mm_maping mm;
   mm->start = do_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
   mm->size = INTIAL_SIZE;
   mm->free = INITIAL_SIZE;
+  return mm;
 }
 
 void __tso_mm_expand() {

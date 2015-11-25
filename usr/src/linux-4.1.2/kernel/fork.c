@@ -98,6 +98,10 @@
  */
 #define MAX_THREADS FUTEX_TID_MASK
 
+ //tso-alloc
+ //largo de inicializacion de la vma
+ #define TSO_ALLOC_LEN 1024
+
 /*
  * Protected counters by write_lock_irq(&tasklist_lock)
  */
@@ -1600,6 +1604,16 @@ static struct task_struct *copy_process(unsigned long clone_flags,
 
 	trace_task_newtask(p, clone_flags);
 	uprobe_copy_process(p, clone_flags);
+
+	//tso-alloc
+	//inicializar vma para tsoalloc
+	p->tso_mm->user = NULL;
+	p->tso_mm->free = NULL;
+	p->start = do_mmap(NULL /*file*/, NULL /*addr*/,
+                      TSO_ALLOC_LEN /*len*/, PROT_READ|PROT_WRITE /*prot*/,
+                      0 /*flag*/, 0/*offset*/);
+	
+	p->size = TSO_ALLOC_LEN;
 
 	return p;
 

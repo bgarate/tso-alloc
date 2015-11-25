@@ -58,7 +58,7 @@ struct sched_param {
 #include <linux/uidgid.h>
 #include <linux/gfp.h>
 #include <linux/magic.h>
-
+	
 #include <asm/processor.h>
 
 //tso-alloc
@@ -1729,7 +1729,7 @@ struct task_struct {
 #endif
 
 	//tso-alloc
-	struct tso_mm_mapping tso_mm;
+	struct tso_mm_mapping * tso_mm;
 };
 
 /* Future-safe accessor for struct task_struct's cpus_allowed. */

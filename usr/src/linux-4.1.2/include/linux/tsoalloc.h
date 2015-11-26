@@ -1,16 +1,19 @@
 #ifndef TSO_ALLOC
 #define TSO_ALLOC
 
+#include <linux/unistd.h>
+#include <linux/linkage.h>
+
 #define INITIAL_SIZE 8
 #define MAX_SIZE 1024
 
 typedef unsigned int size_t;
   
-enum ALLOCATION_STRATEGY {
+typedef enum {
   FIRST_FIT = 0,
   BEST_FIT = 1,
   WORST_FIT = 2
-};
+} ALLOCATION_STRATEGY;
 
 struct tso_mm_region {
   struct tso_mm_region* next;
@@ -25,6 +28,6 @@ struct tso_mm_mapping {
 
 asmlinkage long sys_tso_mm_alloc(size_t size, void* ret);
 asmlinkage long sys_tso_mm_free(void* addr);
-asmlinkage long sys_tso_mm_switch_strategy(enum ALLOCATION_STRATEGY strategy);
+asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy);
 
 #endif

@@ -12,8 +12,8 @@ inline void* __region_end(struct tso_mm_region * region) {
   return (void*)(&region + sizeof(struct tso_mm_region) + region->size);
 }
 
-struct tso_mm_maping* __tso_mm_initialize(void) {
-  struct tso_mm_mapping * mm = kalloc(sizeof(struct tso_mm_maping));
+struct tso_mm_mapping * __tso_mm_initialize(void) {
+  struct tso_mm_mapping * mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
 
   mm->start = (void*) do_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
   mm->size = INTIAL_SIZE;

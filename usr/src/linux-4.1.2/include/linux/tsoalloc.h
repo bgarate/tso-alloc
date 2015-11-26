@@ -24,6 +24,7 @@ struct tso_mm_mapping {
   struct tso_mm_region* first_region;
   void* start;
   size_t size;
+  size_t free;
 };
 
 asmlinkage long sys_tso_mm_alloc(size_t size, void* ret);

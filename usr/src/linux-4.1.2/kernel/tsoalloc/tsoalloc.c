@@ -8,12 +8,12 @@
 
 static ALLOCATION_STRATEGY current_strategy = FIRST_FIT;
 
-inline void* __region_end(struct tso_mm_region region) {
+inline void* __region_end(struct tso_mm_region * region) {
   return (void*)(&region + sizeof(struct tso_mm_region) + region->size);
 }
 
 struct tso_mm_maping* __tso_mm_initialize(void) {
-  struct tso_mm_maping* mm = kalloc(sizeof(struct tso_mm_maping));
+  struct tso_mm_maping * mm = kalloc(sizeof(struct tso_mm_maping));
 
   mm->start = do_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
   mm->size = INTIAL_SIZE;
@@ -38,11 +38,11 @@ void __tso_mm_expand(void) {
 struct tso_mm_region* __tso_mm_get_before_best_fit(size_t size) {
 }
 
-struct tso_mm_region* __tso_mm_get_before_worse_fit(size_t size) {
+struct tso_mm_region* __tso_mm_get_before_worst_fit(size_t size) {
 }
 
 struct tso_mm_region* __tso_mm_get_before_first_fit(size_t size) {
-  struct tso_mm_region current_region = __tso_first_region(void);
+  struct tso_mm_region * current_region = __tso_first_region();
 
   //if(current_region == NULL)
   //  return NULL;
@@ -64,15 +64,15 @@ struct tso_mm_region* __tso_mm_get_before_fit(size_t size) {
   }
 }
 
-void __tso_mm_remove_region(struct tso_mm_region region) {
+void __tso_mm_remove_region(struct tso_mm_region * region) {
 
 }
 
-void __tso_mm_split_region(struct tso_mm_region previous, struct tso_mm_region freed_region, struct tso_mm_region next) {
+void __tso_mm_split_region(struct tso_mm_region * previous, struct tso_mm_region * freed_region, struct tso_mm_region * next) {
 
 }
 
-void __tso_mm_join_region(struct tso_mm_region previous, struct tso_mm_region freed_region, struct tso_mm_region next) {
+void __tso_mm_join_region(struct tso_mm_region * previous, struct tso_mm_region * freed_region, struct tso_mm_region * next) {
 
 }
 

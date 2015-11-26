@@ -1,6 +1,7 @@
 #include <linux/tsoalloc.h>
 #include <linux/mm.h>
 #include <linux/sched.h>
+#include <stdio.h>
 
 #define current_mm current->tso_mm
 

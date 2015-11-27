@@ -1,8 +1,11 @@
 #include <linux/tsoalloc.h>
-#include <linux/mm.h>
 #include <linux/sched.h>
 #include <linux/unistd.h>
 #include <linux/slab.h>
+
+#include <linux/mm.h>
+#include <asm/mman.h>
+//#include <sys/mman.h>
 
 #define current_mm current->tso_mm
 
@@ -15,8 +18,9 @@ inline void* __region_end(struct tso_mm_region * region) {
 struct tso_mm_mapping * __tso_mm_initialize(void) {
   struct tso_mm_mapping * mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
 
-  mm->start = (void*) do_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
-  mm->size = INTIAL_SIZE;
+  //mm->start = (void*) do_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
+  mm->start = (void*) vm_mmap(NULL, NULL, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
+  mm->size = INITIAL_SIZE;
   mm->free = INITIAL_SIZE;
   mm->first_region = NULL;
 

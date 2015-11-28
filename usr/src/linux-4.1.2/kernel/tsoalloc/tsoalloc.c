@@ -108,7 +108,8 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
   if(current_mm->free < size)
     return -1;
 
-  fit = tso_mm_get_before_fit(size, &state);
+  //fit = tso_mm_get_before_fit(size, &state);
+  fit = tso_mm_get_fit(size, &state);
 
   switch(state) {
     case OK:

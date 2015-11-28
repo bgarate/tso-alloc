@@ -21,6 +21,9 @@ inline void* __region_end(struct tso_mm_region * region) {
 }
 
 struct tso_mm_mapping * tso_mm_initialize(void) {
+
+  printk("Initializing alloc");
+
   struct tso_mm_mapping * mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
 
   mm->start = (void*)(long) vm_mmap(NULL, 0, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
@@ -28,15 +31,18 @@ struct tso_mm_mapping * tso_mm_initialize(void) {
   mm->free = INITIAL_SIZE;
   mm->first_region = NULL;
 
+  printk("Start: %ld | Size: %ld | Free: %ld | First region: %p\n", mm->start,
+    mm->size, mm->free, mm->first_region);
+
   return mm;
 }
 
 void __tso_mm_finalize(void) {
-
+  printk("ERROR: Finalize not implemented");
 }
 
 void __tso_mm_expand(void) {
-  
+  printk("ERROR: Expand not implemented");
 }
 
 inline size_t region_size(size_t size) {
@@ -97,7 +103,7 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
   struct tso_mm_region* new_region;
   enum FIT_CONDITIONS state;
   struct tso_mm_region* fit;
-  long position;  
+  long position;
   void* res;
 
   address = NULL;
@@ -120,20 +126,26 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
     default:
       return -1;
   }
-  
+
   new_region = (struct tso_mm_region*)(position);
   new_region->size = size;
 
   new_region->next = fit->next;
-  
+
   if(state == OK)
     fit->next = new_region;
   else if(state == START)
     current_mm->first_region = fit;
 
+  current_mm->size -= available_size;
 
   res = (void*)(long)(&new_region + sizeof(struct tso_mm_region));
   copy_to_user(&address, res, sizeof(void*));
+
+  printk("Start: %ld | Size: %ld | Free: %ld | First region: %p\n", current_mm->start,
+    current_mm->size, current_mm->free, current_mm->first_region);
+  printk("Fit address: %p\n", fit);
+  printk("Alloc address: %p\n", res);
 
   return 0;
 }

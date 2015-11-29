@@ -22,16 +22,18 @@ inline void* __region_end(struct tso_mm_region * region) {
 
 struct tso_mm_mapping * tso_mm_initialize(void) {
 
+  struct tso_mm_mapping * mm;
+
   printk("Initializing alloc");
 
-  struct tso_mm_mapping * mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
+  mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
 
   mm->start = (void*)(long) vm_mmap(NULL, 0, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
   mm->size = INITIAL_SIZE;
   mm->free = INITIAL_SIZE;
   mm->first_region = NULL;
 
-  printk("Start: %ld | Size: %ld | Free: %ld | First region: %p\n", mm->start,
+  printk("Start: %ld | Size: %d | Free: %d | First region: %p\n", (long)mm->start,
     mm->size, mm->free, mm->first_region);
 
   return mm;
@@ -72,15 +74,17 @@ struct tso_mm_region* tso_mm_get_fit(size_t size, enum FIT_CONDITIONS* state) {
 
       switch(current_strategy) {
         case WORST_FIT:
-          isBest = available_size < best_size;
+          //isBest = available_size < best_size;
+          isBest = available_size > best_size;
           break;
         case BEST_FIT:
-          isBest = available_size > best_size;
+          //isBest = available_size > best_size;
+          isBest = available_size < best_size;
           break;
         case FIRST_FIT:
           state = OK;
           return (struct tso_mm_region*)previous_region;
-        }
+      }
 
         if (isBest) {
           best_size = available_size;
@@ -91,7 +95,7 @@ struct tso_mm_region* tso_mm_get_fit(size_t size, enum FIT_CONDITIONS* state) {
 
     previous_region = next_region;
     next_region = next_region->next;
-    available_size = &next_region - &previous_region - sizeof(struct tso_mm_region);
+    available_size = next_region - previous_region - sizeof(struct tso_mm_region);
   }
 
   *state = best_match != NULL ? OK : NO_FIT;
@@ -112,14 +116,15 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
     tso_mm_initialize();
 
   if(current_mm->free < size)
-    return -1;
+    return -1;//Tendia que agrandar el vma
 
   //fit = tso_mm_get_before_fit(size, &state);
   fit = tso_mm_get_fit(size, &state);
 
   switch(state) {
     case OK:
-      position = ((long)fit) + sizeof(struct tso_mm_region);
+      //position = ((long)fit) + sizeof(struct tso_mm_region);//mal fit apunta a la region anterior
+      position = ((long)fit) + ((long)fit->size) + sizeof(struct tso_mm_region);
     case START:
       position = (long)current_mm->start;
       break;
@@ -137,12 +142,13 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
   else if(state == START)
     current_mm->first_region = fit;
 
-  current_mm->size -= available_size;
+  //current_mm->size -= available_size;//no exixte available_size en esta funcion y el size no varia
+  current_mm->free -= size + sizeof(struct tso_mm_region);
 
-  res = (void*)(long)(&new_region + sizeof(struct tso_mm_region));
-  copy_to_user(&address, res, sizeof(void*));
+  res = (void*)(long)(new_region + sizeof(struct tso_mm_region));
+  copy_to_user(&address, res, sizeof(void*));//para santiago esto esta mal
 
-  printk("Start: %ld | Size: %ld | Free: %ld | First region: %p\n", current_mm->start,
+  printk("Start: %ld | Size: %d | Free: %d | First region: %p\n", (long)current_mm->start,
     current_mm->size, current_mm->free, current_mm->first_region);
   printk("Fit address: %p\n", fit);
   printk("Alloc address: %p\n", res);

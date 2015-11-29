@@ -4,16 +4,20 @@
 int main(int argc, char const *argv[])
 {
 
-  printf("SIMPLE ALLOC TEST");
+  printf("SIMPLE FREE TEST");
 
   int* a = tso_alloc(sizeof(int));
 
   printf("Variable a location: %p", a);
 
-  a = 50;
+  long pos_a = &a;
 
-  printf("Variable a value: %d", a);
-  assert(*a == 50);
+  tso_free(a);
+  a = tso_alloc(sizeof(int));
+
+
+  printf("Variable a location: %p", a);
+  assert(a == pos_a);
 
   return 0;
 

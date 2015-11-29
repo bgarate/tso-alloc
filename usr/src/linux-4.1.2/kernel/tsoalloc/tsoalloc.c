@@ -74,11 +74,9 @@ struct tso_mm_region* tso_mm_get_fit(size_t size, enum FIT_CONDITIONS* state) {
 
       switch(current_strategy) {
         case WORST_FIT:
-          //isBest = available_size < best_size;
           isBest = available_size > best_size;
           break;
         case BEST_FIT:
-          //isBest = available_size > best_size;
           isBest = available_size < best_size;
           break;
         case FIRST_FIT:
@@ -103,7 +101,7 @@ struct tso_mm_region* tso_mm_get_fit(size_t size, enum FIT_CONDITIONS* state) {
 
 }
 
-asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
+asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   struct tso_mm_region* new_region;
   enum FIT_CONDITIONS state;
   struct tso_mm_region* fit;
@@ -146,7 +144,7 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void* address) {
   current_mm->free -= size + sizeof(struct tso_mm_region);
 
   res = (void*)(long)(new_region + sizeof(struct tso_mm_region));
-  copy_to_user(&address, res, sizeof(void*));//para santiago esto esta mal
+  copy_to_user(*address, res, sizeof(void*));
 
   printk("Start: %ld | Size: %d | Free: %d | First region: %p\n", (long)current_mm->start,
     current_mm->size, current_mm->free, current_mm->first_region);

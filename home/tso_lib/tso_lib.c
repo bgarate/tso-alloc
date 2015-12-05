@@ -17,10 +17,10 @@ long tso_free(void* address) {
 
 }
 
-void tso_switch_strategy(ALLOCATION_STRATEGY strategy) {
+int tso_switch_strategy(ALLOCATION_STRATEGY strategy) {
 
   long res = syscall(SYSCALL_SWITCH_STRATEGY);
 
-  return res != 0 ? 0 : -1;
-
+  int ret = res != 0 ? 0 : -1;
+  return ret;
 }

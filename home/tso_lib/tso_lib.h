@@ -16,6 +16,6 @@ typedef enum {
 
 void* tso_alloc(size_t size);
 long tso_free(void* address);
-void tso_switch_strategy(ALLOCATION_STRATEGY strategy);
+int tso_switch_strategy(ALLOCATION_STRATEGY strategy);
 
 #endif

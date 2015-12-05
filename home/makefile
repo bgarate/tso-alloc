@@ -44,4 +44,4 @@ test5.o: test5.c
 #	gcc -c test6.c	 
 
 clean: 
-	rm test1 test2 test3 test4 test5 test6 test1.o tso_lib.o test2.o test3.o test4.o test5.o 
+	rm test1 test2 test3 test4 test5 test1.o tso_lib.o test2.o test3.o test4.o test5.o 

@@ -24,7 +24,7 @@ struct tso_mm_mapping * tso_mm_initialize(void) {
 
   struct tso_mm_mapping * mm;
 
-  printk("Initializing alloc");
+  printk("\n\nInitializing alloc\n");
 
   mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
 
@@ -40,11 +40,11 @@ struct tso_mm_mapping * tso_mm_initialize(void) {
 }
 
 void __tso_mm_finalize(void) {
-  printk("ERROR: Finalize not implemented");
+  printk("ERROR: Finalize not implemented\n");
 }
 
 void __tso_mm_expand(void) {
-  printk("ERROR: Expand not implemented");
+  printk("ERROR: Expand not implemented\n");
 }
 
 inline size_t region_size(size_t size) {

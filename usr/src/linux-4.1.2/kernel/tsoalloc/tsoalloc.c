@@ -23,17 +23,21 @@ inline void* __region_end(struct tso_mm_region * region) {
 struct tso_mm_mapping * tso_mm_initialize(void) {
 
   struct tso_mm_mapping * mm;
+  unsigned long addr;
 
   printk("\n\nInitializing alloc\n");
 
   mm = kmalloc(sizeof(struct tso_mm_mapping), GFP_KERNEL);
 
-  mm->start = (void*)(long) vm_mmap(NULL, 0, INITIAL_SIZE, PROT_READ | PROT_WRITE, 0, 0);
+  addr = vm_mmap(NULL, 0, INITIAL_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0);
+  printk("Dirr vm_mmap: %lu \n", addr);
+  
+  mm->start = (void*) addr; 
   mm->size = INITIAL_SIZE;
   mm->free = INITIAL_SIZE;
   mm->first_region = NULL;
 
-  printk("Start: %ld | Size: %d | Free: %d | First region: %p\n", (long)mm->start,
+  printk("Start: %p | Size: %d | Free: %d | First region: %p\n", mm->start,
     mm->size, mm->free, mm->first_region);
 
   return mm;

@@ -1,12 +1,12 @@
-#IFNDEF TSO_LIB
-#DEFINE TSO_LIB
+#ifndef TSO_LIB
+#define TSO_LIB
 
 #include <unistd.h>
-#include <stdef.h>
+#include <stddef.h>
 
-#DEFINE SYSCALL_ALLOC 360
-#DEFINE SYSCALL_FREE 361
-#DEFINE SYSCALL_SWITCH_STRATEGY 362
+#define SYSCALL_ALLOC 360
+#define SYSCALL_FREE 361
+#define SYSCALL_SWITCH_STRATEGY 362
 
 typedef enum {
   FIRST_FIT = 0,
@@ -18,4 +18,4 @@ void* tso_alloc(size_t size);
 long tso_free(void* address);
 void tso_switch_strategy(ALLOCATION_STRATEGY strategy);
 
-#ENDIF
+#endif

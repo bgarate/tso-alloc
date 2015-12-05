@@ -1,5 +1,6 @@
-#include "tso_lib.h"
+#include "tso_lib/tso_lib.h"
 #include "assert.h"
+#include <stdio.h>
 
 int main(int argc, char const *argv[])
 {
@@ -10,9 +11,9 @@ int main(int argc, char const *argv[])
 
   printf("Variable a location: %p", a);
 
-  a = 50;
+  *a = 50;
 
-  printf("Variable a value: %d", a);
+  printf("Variable a value: %d", *a);
   assert(*a == 50);
 
   return 0;

@@ -1,5 +1,6 @@
-#include "tso_lib.h"
+#include "tso_lib/tso_lib.h"
 #include "assert.h"
+#include <stdio.h>
 
 int main(int argc, char const *argv[])
 {

@@ -41,6 +41,7 @@ struct tso_mm_mapping * tso_mm_initialize(void) {
   printk("Start: %p | Size: %lu | Free: %lu | First region: %p\n", mm->start,
     mm->size, mm->free, mm->first_region);
 
+  printk("Initialization alloc finished\n");
   return mm;
 }
 
@@ -58,18 +59,25 @@ inline unsigned long region_size(unsigned long size) {
 
 struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* state) {
 
+  printk("Initializing variables get fit\n");
+
   struct tso_mm_region* next_region = current_mm->first_region;
   struct tso_mm_region* previous_region = NULL;
   struct tso_mm_region* best_match = NULL;
   unsigned long best_size = 0;
   unsigned long available_size;
 
+
   if(next_region == NULL) {
+    printk("Case start\n");
     *state = START;
     return NULL;
   }
 
+  printk("Case NO start\n");
+
   available_size = ((unsigned long)next_region - ((unsigned long)current_mm->start));
+  printk("Available Size: %lu \n", available_size);
 
   while(next_region != NULL) {
 
@@ -98,9 +106,10 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
 
     previous_region = next_region;
     next_region = next_region->next;
-    available_size = next_region - previous_region - (unsigned long)sizeof(struct tso_mm_region);
+    available_size = (unsigned long)next_region - (unsigned long)previous_region - (unsigned long)sizeof(struct tso_mm_region);
   }
 
+  printk("Best Match: %p \n", best_match);
   *state = best_match != NULL ? OK : NO_FIT;
   return best_match;
 
@@ -108,7 +117,7 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
 
 asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   struct tso_mm_region* new_region;
-  enum FIT_CONDITIONS state;
+  enum FIT_CONDITIONS state = NO_FIT;
   struct tso_mm_region* fit;
   unsigned long position;
   void* res;
@@ -116,12 +125,18 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   address = NULL;
 
   if (current_mm == NULL)
-    tso_mm_initialize();
+    current_mm = tso_mm_initialize();
+
+  printk("Current_mm after initialize:  %p\n", current_mm);
 
   if(current_mm->free < (unsigned long)size)
     return -1;//Tendia que agrandar el vma
 
+  printk("State value before get fit %u\n", state);
+
   fit = tso_mm_get_fit(size, &state);
+
+  printk("State value after get fit %u\n", state);
 
   switch(state) {
     case OK:

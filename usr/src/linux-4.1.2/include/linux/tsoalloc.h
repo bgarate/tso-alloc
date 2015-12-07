@@ -1,13 +1,12 @@
 #ifndef TSO_ALLOC
 #define TSO_ALLOC
 
+#include <linux/types.h>
 #include <linux/unistd.h>
 #include <linux/linkage.h>
 
 #define INITIAL_SIZE 8
 #define MAX_SIZE 1024
-
-typedef unsigned int size_t;
   
 typedef enum {
   FIRST_FIT = 0,
@@ -17,14 +16,14 @@ typedef enum {
 
 struct tso_mm_region {
   struct tso_mm_region* next;
-  size_t size;
+  unsigned long size;
 };
 
 struct tso_mm_mapping {
   struct tso_mm_region* first_region;
   void* start;
-  size_t size;
-  size_t free;
+  unsigned long size;
+  unsigned long free;
 };
 
 asmlinkage long sys_tso_mm_alloc(size_t size, void** ret);

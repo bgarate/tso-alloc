@@ -151,12 +151,17 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   new_region = (struct tso_mm_region*)(position);
   new_region->size = (unsigned long)size;
 
-  new_region->next = fit->next;
+  if (state == START){
+    new_region->next = NULL;
+  }else{
+    new_region->next = fit->next;  
+  }
+  
 
   if(state == OK)
     fit->next = new_region;
   else if(state == START)
-    current_mm->first_region = fit;
+    current_mm->first_region = new_region;
 
   current_mm->free -= (unsigned long)size + (unsigned long)sizeof(struct tso_mm_region);
 

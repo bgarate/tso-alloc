@@ -6,17 +6,23 @@ int main(int argc, char const *argv[])
 {
   char * aux = "";
 
-  perror("SIMPLE ALLOC TEST");
+  system("echo SIMPLE ALLOC TEST");
+
+  // print memory map
+  system("echo Mapa de memoria");
+  char str[80];
+  sprintf(str, "cat /proc/%ld/maps", (int)getpid());
+  system(str);
 
   int* a = tso_alloc(sizeof(int));
 
-  sprintf(aux, "Variable a location: %p", a);
-  perror(aux);
+  sprintf(aux, "echo Variable a location: %p", a);
+  system(aux);
 
   *a = 50;
 
-  sprintf(aux, "Variable a value: %d", *a);
-  perror(aux);
+  sprintf(aux, "echo Variable a value: %d", *a);
+  system(aux);
   assert(*a == 50);
 
   return 0;

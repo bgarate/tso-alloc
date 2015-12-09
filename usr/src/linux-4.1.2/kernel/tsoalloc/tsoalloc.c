@@ -148,6 +148,8 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
       return -1;
   }
 
+  printk("Position setted, creating new region\n");  
+
   new_region = (struct tso_mm_region*)(position);
   new_region->size = (unsigned long)size;
 
@@ -156,7 +158,8 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   }else{
     new_region->next = fit->next;  
   }
-  
+
+  printk("New region created, updating mm\n");  
 
   if(state == OK)
     fit->next = new_region;
@@ -165,8 +168,11 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
 
   current_mm->free -= (unsigned long)size + (unsigned long)sizeof(struct tso_mm_region);
 
+  printk("mm updated, setting return value\n");
+
   res = (void*)(new_region + (unsigned long)sizeof(struct tso_mm_region));
-  copy_to_user(*address, res, (unsigned long)sizeof(void*));
+  printk("Final result: %p\n", res);
+  copy_to_user(address, &res, (unsigned long)sizeof(void*));
 
   printk("Start: %p | Size: %lu | Free: %lu | First region: %p\n", current_mm->start,
     current_mm->size, current_mm->free, current_mm->first_region);

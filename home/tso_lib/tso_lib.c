@@ -1,20 +1,21 @@
 #include "tso_lib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void* tso_alloc(size_t size) {
-  char * aux = "";
-  void** address;
+  char aux[500];
+  void* address = NULL;
 
-  system("echo llamando syscall...");
+  sprintf(aux, "echo dir de address: %p \n",  &address);
+  system(aux);
 
-  long res = syscall(SYSCALL_ALLOC, size, address);
+  long res = syscall(SYSCALL_ALLOC, size, &address);
 
   sprintf(aux, "echo address: %p \n",  address);
   system(aux);
-  sprintf(aux, "echo *address %p \n", *address);
-  system(aux);
 
-  return res != 0 ? *address : NULL;
+  return address;
+  //return NULL;
 }
 
 long tso_free(void* address) {

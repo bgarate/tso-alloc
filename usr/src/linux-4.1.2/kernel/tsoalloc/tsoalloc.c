@@ -122,14 +122,14 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   unsigned long position;
   void* res;
 
-  address = NULL;
+  //*address = NULL;
 
   if (current_mm == NULL)
     current_mm = tso_mm_initialize();
 
   printk("Current_mm after initialize:  %p\n", current_mm);
 
-  if(current_mm->free < (unsigned long)size)
+  if(current_mm->free < region_size(size))
     return -1;//Tendia que agrandar el vma
 
   printk("State value before get fit %u\n", state);

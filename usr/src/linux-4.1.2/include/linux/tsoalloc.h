@@ -5,8 +5,8 @@
 #include <linux/unistd.h>
 #include <linux/linkage.h>
 
-#define INITIAL_SIZE 8
-#define MAX_SIZE 1024
+#define INITIAL_SIZE 8 * PAGE_SIZE
+#define MAX_SIZE 1024 * PAGE_SIZE
   
 typedef enum {
   FIRST_FIT = 0,

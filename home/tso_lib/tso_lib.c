@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+char aux[500];
+
 void* tso_alloc(size_t size) {
-  char aux[500];
   void* address = NULL;
 
   sprintf(aux, "echo dir de address: %p \n",  &address);
@@ -21,7 +22,8 @@ void* tso_alloc(size_t size) {
 long tso_free(void* address) {
 
   long res = syscall(SYSCALL_FREE, address);
-
+  sprintf(aux, "echo res free: %ld \n",  res);
+  system(aux);  
   return res != 0 ? 0 : -1;
 
 }

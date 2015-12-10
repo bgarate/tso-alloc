@@ -181,7 +181,7 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
 
   printk("mm updated, setting return value\n");
 
-  res = (void*)(new_region + (unsigned long)sizeof(struct tso_mm_region));
+  res = (void*)((unsigned long)new_region + (unsigned long)sizeof(struct tso_mm_region));
   printk("Final result: %p\n", res);
   copy_to_user(address, &res, (unsigned long)sizeof(void*));
 
@@ -197,16 +197,25 @@ asmlinkage long sys_tso_mm_free(void* addr) {
   struct tso_mm_region* previous_region;
   void* dataAdd;
 
+  printk("(before free) Start: %p | Size: %lu | Free: %lu | First region: %p\n", current_mm->start,
+    current_mm->size, current_mm->free, current_mm->first_region);
+  printk("addr: %p \n", addr);
+
   if (current_mm->first_region == NULL){
     return -1;
 
   } else {
 
+    printk("sizeof : %u \n", sizeof(struct tso_mm_region));
+    printk("sizeof long: %lu \n", (unsigned long)sizeof(struct tso_mm_region));
+
     region = current_mm->first_region;
     dataAdd = (void*)((unsigned long)region + (unsigned long)sizeof(struct tso_mm_region));
 
-    if (dataAdd == addr){
+    printk("dataAdd: %p \n", dataAdd);
+    if (((unsigned long)dataAdd) == ((unsigned long)addr)){
       current_mm->first_region = region->next;
+      printk("free fisrt region match!\n");
     } else {
 
       previous_region = region;
@@ -214,8 +223,9 @@ asmlinkage long sys_tso_mm_free(void* addr) {
       dataAdd = (void*)((unsigned long)region + (unsigned long)sizeof(struct tso_mm_region));
 
       while(region != NULL){
-        if (dataAdd == addr){
-
+        printk("dataAdd: %lu \n", (unsigned long) dataAdd);
+        if (((unsigned long)dataAdd) == ((unsigned long)addr)){
+          printk("free match!\n");
           previous_region->next = region->next;
           break;
         } else {
@@ -229,6 +239,9 @@ asmlinkage long sys_tso_mm_free(void* addr) {
       }  
     }
   }
+
+  printk("(after free) Start: %p | Size: %lu | Free: %lu | First region: %p\n", current_mm->start,
+    current_mm->size, current_mm->free, current_mm->first_region);
 
   return 0;
 }

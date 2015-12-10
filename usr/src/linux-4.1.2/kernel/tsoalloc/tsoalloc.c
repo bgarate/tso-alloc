@@ -193,6 +193,43 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
 }
 
 asmlinkage long sys_tso_mm_free(void* addr) {
+  struct tso_mm_region* region;
+  struct tso_mm_region* previous_region;
+  void* dataAdd;
+
+  if (current_mm->first_region == NULL){
+    return -1;
+
+  } else {
+
+    region = current_mm->first_region;
+    dataAdd = (void*)((unsigned long)region + (unsigned long)sizeof(struct tso_mm_region));
+
+    if (dataAdd == addr){
+      current_mm->first_region = region->next;
+    } else {
+
+      previous_region = region;
+      region = region->next;
+      dataAdd = (void*)((unsigned long)region + (unsigned long)sizeof(struct tso_mm_region));
+
+      while(region != NULL){
+        if (dataAdd == addr){
+
+          previous_region->next = region->next;
+          break;
+        } else {
+
+          previous_region = region;
+          region = region->next;
+          if (region == NULL)
+            return -1;
+          dataAdd = (void*)((unsigned long)region + (unsigned long)sizeof(struct tso_mm_region)); 
+        }
+      }  
+    }
+  }
+
   return 0;
 }
 

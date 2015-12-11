@@ -74,12 +74,6 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
 
   available_size = ((unsigned long)next_region - ((unsigned long)current_mm->start));
 
-  /*if(current_strategy == FIRST_FIT && available_size > region_size(size)){
-    printk("Case start because free\n");
-    *state = START;
-    return next_region; 
-  }*/
-
   while(1) {
 
     printk("Available Size: %lu \n", available_size);
@@ -126,7 +120,6 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
   }
 
   printk("Best Match: %p \n", best_match);
-  //*state = best_match != NULL ? OK : NO_FIT;
   if ((*state == OK) && (best_match == NULL)){
     *state=START;
   }

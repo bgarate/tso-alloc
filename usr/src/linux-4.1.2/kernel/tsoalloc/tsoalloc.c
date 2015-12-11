@@ -54,7 +54,7 @@ void __tso_mm_expand(void) {
 }
 
 inline unsigned long region_size(unsigned long size) {
-  return sizeof(struct tso_mm_region) + size;
+  return ((unsigned long)sizeof(struct tso_mm_region)) + size;
 }
 
 struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* state) {
@@ -67,7 +67,7 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
   int isBest;
 
   if(next_region == NULL) {
-    printk("Case start\n");
+    printk("Case start at begin\n");
     *state = START;
     return NULL;
   }
@@ -75,6 +75,12 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
   printk("Case NO start\n");
 
   available_size = ((unsigned long)next_region - ((unsigned long)current_mm->start));
+
+  if(available_size > region_size(size)){
+    printk("Case start because free\n");
+    *state = START;
+    return next_region; 
+  }
 
   while(1) {
 
@@ -149,7 +155,7 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
 
   switch(state) {
     case OK:
-      position = ((unsigned long)fit) + region_size(fit->size) + (unsigned long)sizeof(struct tso_mm_region);
+      position = ((unsigned long)fit) + region_size(fit->size);
       break;
     case START:
       position = (unsigned long)current_mm->start;
@@ -165,7 +171,7 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   new_region->size = (unsigned long)size;
 
   if (state == START){
-    new_region->next = NULL;
+    new_region->next = fit;
   }else{
     new_region->next = fit->next;  
   }
@@ -215,6 +221,7 @@ asmlinkage long sys_tso_mm_free(void* addr) {
     printk("dataAdd: %p \n", dataAdd);
     if (((unsigned long)dataAdd) == ((unsigned long)addr)){
       current_mm->first_region = region->next;
+      current_mm->free += region_size(region->size);
       printk("free fisrt region match!\n");
     } else {
 
@@ -225,8 +232,9 @@ asmlinkage long sys_tso_mm_free(void* addr) {
       while(region != NULL){
         printk("dataAdd: %lu \n", (unsigned long) dataAdd);
         if (((unsigned long)dataAdd) == ((unsigned long)addr)){
-          printk("free match!\n");
+          printk("free matched!\n");
           previous_region->next = region->next;
+          current_mm->free += region_size(region->size);
           break;
         } else {
 

@@ -5,7 +5,7 @@
 int main(int argc, char const *argv[])
 {
 
-  printf("BEST FIT TEST");
+  printf("BEST FIT TEST\n");
 
   tso_switch_strategy(BEST_FIT);
 
@@ -17,13 +17,13 @@ int main(int argc, char const *argv[])
   void* f = tso_alloc(200);
   void* g = tso_alloc(280);
 
-  printf("Variable a location: %p", a);
-  printf("Variable b location: %p", b);
-  printf("Variable c location: %p", c);
-  printf("Variable d location: %p", d);
-  printf("Variable e location: %p", e);
-  printf("Variable f location: %p", f);
-  printf("Variable g location: %p", g);
+  printf("Variable a location: %p\n", a);
+  printf("Variable b location: %p\n", b);
+  printf("Variable c location: %p\n", c);
+  printf("Variable d location: %p\n", d);
+  printf("Variable e location: %p\n", e);
+  printf("Variable f location: %p\n", f);
+  printf("Variable g location: %p\n", g);
 
   tso_free(c);
   tso_free(e);
@@ -33,9 +33,9 @@ int main(int argc, char const *argv[])
   void* i = tso_alloc(60);
   void* j = tso_alloc(40);
 
-  printf("Variable h location: %p", h);
-  printf("Variable i location: %p", i);
-  printf("Variable j location: %p", j);
+  printf("Variable h location: %p\n", h);
+  printf("Variable i location: %p\n", i);
+  printf("Variable j location: %p\n", j);
 
   return 0;
 

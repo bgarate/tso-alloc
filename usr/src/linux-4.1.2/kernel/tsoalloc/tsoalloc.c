@@ -115,8 +115,9 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
     }
 
     previous_region = next_region;
-    if (previous_region == NULL)
+    if (previous_region == NULL){
       break;
+    }
     next_region = next_region->next;
     if (next_region != NULL)
       available_size = (unsigned long)next_region - (unsigned long)previous_region - region_size(previous_region->size);

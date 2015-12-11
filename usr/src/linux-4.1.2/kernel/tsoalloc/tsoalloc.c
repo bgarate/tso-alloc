@@ -72,15 +72,13 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
     return NULL;
   }
 
-  printk("Case NO start\n");
-
   available_size = ((unsigned long)next_region - ((unsigned long)current_mm->start));
 
-  if(available_size > region_size(size)){
+  /*if(current_strategy == FIRST_FIT && available_size > region_size(size)){
     printk("Case start because free\n");
     *state = START;
     return next_region; 
-  }
+  }*/
 
   while(1) {
 
@@ -88,6 +86,7 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
     if(available_size > region_size(size)) {
 
       printk("Size enough!\n");
+      *state = OK;
       isBest = 0;
 
       switch(current_strategy) {
@@ -101,7 +100,9 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
           break;
         case FIRST_FIT:
           printk("Case FIRST_FIT!\n");
-          *state = OK;
+          if (previous_region == NULL){
+            *state=START;
+          }
           return (struct tso_mm_region*)previous_region;
       }
 
@@ -124,7 +125,10 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
   }
 
   printk("Best Match: %p \n", best_match);
-  *state = best_match != NULL ? OK : NO_FIT;
+  //*state = best_match != NULL ? OK : NO_FIT;
+  if ((*state == OK) && (best_match == NULL)){
+    *state=START;
+  }
   return best_match;
 
 }
@@ -171,7 +175,7 @@ asmlinkage long sys_tso_mm_alloc(size_t size, void** address) {
   new_region->size = (unsigned long)size;
 
   if (state == START){
-    new_region->next = fit;
+    new_region->next = current_mm->first_region;
   }else{
     new_region->next = fit->next;  
   }

@@ -73,10 +73,20 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
   }
 
   available_size = ((unsigned long)next_region - ((unsigned long)current_mm->start));
+  switch(current_strategy) {
+    case WORST_FIT:
+      best_size = 0;
+      break;
+    case BEST_FIT:
+      best_size = current_mm->size+1;
+      break;
+    case FIRST_FIT:
+      break;
+  }
 
-  int i = 0;
-  while(i<20) {
-    i++;
+  //int i = 0;
+  while(1/*i<5*/) {
+    //i++;
 
     printk("Available Size: %lu \n", available_size);
     if(available_size > region_size(size)) {

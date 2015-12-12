@@ -27,8 +27,11 @@ long tso_free(void* address) {
 
 int tso_switch_strategy(ALLOCATION_STRATEGY strategy) {
 
-  long res = syscall(SYSCALL_SWITCH_STRATEGY);
+  printf("strategy before callback: %u \n", strategy);
 
+  long res = syscall(SYSCALL_SWITCH_STRATEGY, strategy);
+
+  printf("switch res: %ld \n", res);
   int ret = res != 0 ? 0 : -1;
   return ret;
 }

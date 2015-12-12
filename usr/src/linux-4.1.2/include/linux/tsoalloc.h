@@ -28,6 +28,6 @@ struct tso_mm_mapping {
 
 asmlinkage long sys_tso_mm_alloc(size_t size, void** ret);
 asmlinkage long sys_tso_mm_free(void* addr);
-asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy);
+asmlinkage long sys_tso_mm_switch_strategy(unsigned int strategy);
 
 #endif

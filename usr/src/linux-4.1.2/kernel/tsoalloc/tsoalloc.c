@@ -74,7 +74,9 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
 
   available_size = ((unsigned long)next_region - ((unsigned long)current_mm->start));
 
-  while(1) {
+  int i = 0;
+  while(i<20) {
+    i++;
 
     printk("Available Size: %lu \n", available_size);
     if(available_size > region_size(size)) {
@@ -83,6 +85,7 @@ struct tso_mm_region* tso_mm_get_fit(unsigned long size, enum FIT_CONDITIONS* st
       *state = OK;
       isBest = 0;
 
+      printk("Current strategy %u\n", current_strategy);
       switch(current_strategy) {
         case WORST_FIT:
           printk("Case WORST_FIT\n");
@@ -252,8 +255,10 @@ asmlinkage long sys_tso_mm_free(void* addr) {
   return 0;
 }
 
-asmlinkage long sys_tso_mm_switch_strategy(ALLOCATION_STRATEGY strategy) {
-  current_strategy = strategy;
+asmlinkage long sys_tso_mm_switch_strategy(unsigned int strategy) {
+  printk("strategy recived %u", current_strategy);
+  //copy_from_user(&current_strategy, &strategy, sizeof(ALLOCATION_STRATEGY));
+  current_strategy = (ALLOCATION_STRATEGY)strategy;
   return 0;
 }
 

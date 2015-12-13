@@ -1,0 +1,147 @@
+#include "tso_lib/tso_lib.h"
+#include "assert.h"
+#include <stdio.h>
+#include <unistd.h>
+
+#define MAX_ALLOCS RAND_MAX
+#define RAND_SEED 12345
+#define MAPPING_SIZE 8
+
+struct alloc {
+	void* address,
+	int size
+};
+
+int main(int argc, char const *argv[])
+{
+
+  printf("RANDOM ALLOCATION USAGE TEST\n\n");
+  printf("The following tests will run until\n");
+  printf("the allocation algorithm has no more\n");
+  printf("space to continue allocating chunks\n\n");
+
+  printf("\n\n*****************\n\n");
+
+  printf("LOW FRAGMENTATION\n\n");
+
+  printf("WORST FIT STRATEGY\n");
+  tso_switch_strategy(WORST_FIT);
+  srand(RAND_SEED);
+  run_benchmark(1024,64);
+  printf("\n\nBEST FIT STRATEGY\n");
+  tso_switch_strategy(BEST_FIT);
+  srand(RAND_SEED);
+  run_benchmark(1024,64);
+  printf("\n\nFIRST FIT STRATEGY\n");
+  tso_switch_strategy(FIRST_FIT);
+  srand(RAND_SEED);
+  run_benchmark(1024,64);
+
+  printf("\n\n*****************\n\n");
+  printf("HIGH FRAGMENTATION\n\n");
+
+  printf("WORST FIT STRATEGY\n");
+  tso_switch_strategy(WORST_FIT);
+  srand(RAND_SEED * 2);
+  run_benchmark(1024,1024);
+  printf("\n\nBEST FIT STRATEGY\n");
+  tso_switch_strategy(BEST_FIT);
+  srand(RAND_SEED * 2);
+  run_benchmark(1024,1024);
+  printf("\n\nFIRST FIT STRATEGY\n");
+  tso_switch_strategy(FIRST_FIT);
+  srand(RAND_SEED * 2);
+  run_benchmark(1024,1024);
+
+  printf("\n\n*****************\n\n");
+
+  return 0;
+
+}
+
+bool run_allocations(int mean_size, int jitter, struct alloc* allocs, int* allocs_size, int* free_space, long* allocs_number) {
+
+	// Alloc de una cantidad al azar [0-cantidad_disponible_de_allocs]
+	// de un tamano mean_size +- jitter y ordenados al azar en un array
+	// utilizando una variacion del algoritmo Fisher-Yates inside-out
+	int up_to = rand() % (MAX_ALLOCS - *allocs_size);
+	for(int i = 0; i < up_to - 1; i++) {
+
+		int place = rand() % *allocs_size;
+		if(place != *allocs_size){
+			allocs[*allocs_size] = allocs[place]; 
+		}
+	
+		struct alloc new_alloc;
+
+		int expected_size = rand() % (jitter * 2) - jitter + mean_size;
+		new_alloc.size = expected_size > *free_size ? *free_size : expected_size;
+		new_alloc.address = tso_alloc(new_alloc.size);
+		
+		if(new_alloc.address == NULL)
+			return false;
+
+		allocs[place] = new_alloc;
+		*allocs_size++;
+
+		*free_space -= new_alloc.size;
+		*allocs_number++;
+
+		if(*free_space == 0)
+			return false;
+		else if(*free_space < mean_size - jitter)
+			return false;
+	}
+
+	return true;
+
+}
+
+bool run_deallocations(struct alloc* allocs, int* allocs_size, int* free_space) {
+	
+	// Dealloc de una cantidad al azar [0-cantidad_de_allocs]
+	// del array
+	int down_to = *allocs_size - rand() % *allocs_size;
+	for(; *allocs_size > down_to; *allocs_size--) {
+		struct alloc old_alloc = allocs[alloc_size + 1];
+		tso_free(allocs.address);
+		*free_space += old_alloc.size;
+	}
+
+
+	return true;
+}
+
+void run_benchmark(int mean_size, int jitter) {
+	
+	long mapping_size = getpagesize() * MAPPING_SIZE;
+	long free_space = mapping_size;
+
+	struct alloc allocs[MAX_ALLOCS] = {NULL};
+	int allocs_size = 0;
+
+	bool alloc_result;
+
+	printf("RUNNING ALLOC TEST\n");
+
+	long allocs_number = 0;
+	long runs = 0;
+
+	while(true) {
+		runs++;
+		alloc_result = run_allocations(mean_size, jitter, allocs, &allocs_size, &free_space, &allocs_number);
+		if(!alloc_result)
+			break;
+		run_deallocations(allocs, &allocs_size);
+	}
+
+	
+	printf("ALLOC TEST STOPPEP\n");
+	printf(" * Number of alloc-dealloc runs: %ld", runs);
+	printf(" * Number of allocs: %ld", allocs_number);
+	printf(" * Initial size: %ld", mapping_size);
+	printf(" * Space remainging: %ld", free_space);
+	printf(" * Wasted space: %f\%", (float)free_space / mapping_size);
+	printf(" * Free/(Mean size) ratio: %f", (float)free_space / mean_size);
+
+}

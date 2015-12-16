@@ -43,8 +43,7 @@ struct benchmark {
 	long deallocs_number;
 	long runs;
 
-	clock_t start_time;
-	clock_t end_time;
+	double alloc_time;
 };
 
 struct result {
@@ -189,7 +188,7 @@ int main(int argc, char const *argv[])
   run_all_benchmarks(32, p1);*/
   add_to_description("MEDIUM CHUNKS", &p2);
   run_all_benchmarks(128, p2);
-  add_to_description("BIG CHUNKS", &p3);
+	add_to_description("BIG CHUNKS", &p3);
   run_all_benchmarks(512, p3);
 
 	print_results();
@@ -290,7 +289,7 @@ void save_result(struct parameters p) {
 	r.deallocs_number = benchmark.deallocs_number;
 
 
-	double total_run_time = (double)(benchmark.end_time - benchmark.start_time) / CLOCKS_PER_SEC;
+	double total_run_time = (double)(benchmark.alloc_time) / CLOCKS_PER_SEC;
 	double avg_alloc_time =  total_run_time / benchmark.allocs_number * 1000;
 	
 	r.avg_alloc_time = avg_alloc_time;
@@ -325,7 +324,7 @@ void run_benchmark(struct parameters p) {
 	benchmark.deallocs_number = 0;
 	benchmark.runs = 0;
 
-	benchmark.start_time = clock();
+	benchmark.alloc_time = 0;
 
 	int previous_allocs = 0;
 	int previous_deallocs = 0;
@@ -334,7 +333,14 @@ void run_benchmark(struct parameters p) {
 
 	while(true) {
 		benchmark.runs++;
+
+		clock_t start_time = clock();
+
 		alloc_result = run_allocations(p);
+
+		clock_t end_time = clock();
+		benchmark.alloc_time += end_time - start_time;
+
 		if(!alloc_result && (benchmark.max_deallocs == 0 || !p.deallocate_after_fail))
 			break;
 		int old_max_deallocs = benchmark.max_deallocs;
@@ -349,8 +355,6 @@ void run_benchmark(struct parameters p) {
 		previous_allocs = benchmark.allocs_number;
 		previous_deallocs = benchmark.deallocs_number;
 	}
-
-	benchmark.end_time = clock();
 
 	save_result(p);
 
